@@ -1,14 +1,21 @@
+#!/usr/bin/python
 import tensorflow as tf
 import numpy as np
-import  generate_word_em_vector as data_reader
+import  data_reader_np as data_reader
 
-taglist=['N','V','J','D','L','A','C','RD','P','PU','PP']
+taglist=['PRP$', 'VBG', 'VBD', 'VBN', 'VBP', 'WDT', 'JJ', 'WP', 'VBZ', 'DT', 'RP', 'NN', 'FW', 'POS', 'TO', 'PRP', 'RB', 'NNS', 'NNP', 'VB', 'WRB', 'CC', 'PDT', 'RBS', 'RBR', 'CD', 'EX', 'IN', 'WP$', 'MD', 'NNPS', 'JJS', 'JJR', 'SYM', 'UH']
+
+network_input_path="network_input"
 
 def neuralNetwork(window=1,learning_rate = 0.001,n_input=100):
 
     print "-----------> Loading Data files <---------------"
-    train_word,train_tag=data_reader.load_data("train",window)
-    test_word,test_tag=data_reader.load_data("test",window)
+    x_all,y_all=data_reader.read_data(network_input_path)
+
+    train_word=x_all
+    train_tag=y_all
+    test_word=x_all
+    test_tag=y_all
 
     print "\n"
     print "-- Train Shape -- "
@@ -22,7 +29,7 @@ def neuralNetwork(window=1,learning_rate = 0.001,n_input=100):
     # Parameters
     batch_size = 1500
     display_step = 1
-    training_epochs=50
+    training_epochs=100
 
     # Network Parameters
     # n_input = 100 # embading size
@@ -99,12 +106,12 @@ def neuralNetwork(window=1,learning_rate = 0.001,n_input=100):
             accuracy_val=accuracy.eval({x: test_word[st_idx:end_idx], y: test_tag[st_idx:end_idx]})
             total_ac=total_ac+accuracy_val
             itr_step=itr_step+1
-            print "iterate: ",i," accuracy-val: ",accuracy_val
+            # print "iterate: ",i," accuracy-val: ",accuracy_val
 
         print "Final - Accuracy: ","{:.9f}".format(total_ac/itr_step)
-	accuracy_all_data=accuracy.eval({x:test_word,y:test_tag}) 
+	accuracy_all_data=accuracy.eval({x:test_word,y:test_tag})
 	print "Accuracy All Data: ","{:.9f}".format(accuracy_all_data)
-	
+
 
 def run(window=1,learning_rate = 0.001,n_input=100):
     neuralNetwork(window,learning_rate,n_input)
